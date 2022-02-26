@@ -29,11 +29,8 @@ def target_tree_structure(row_soup, tree_path):
 
 
 def soup_table_to_dict(soup_table, row_cl='topic-surround', list_of_columns=['td;class=topic-name:a', 'td;class=topic-name:a:href', 'td;class=topic-common:i', 'td;class=topic-desc'], headers=['1','2','3','4']):
-    
     assert len(list_of_columns) == len(headers)
-
     rows = soup_table.find_all('tr', row_cl)
-
     table_dict = {}
     for row_num, row in enumerate(rows):
         row_dct = {}
@@ -41,7 +38,6 @@ def soup_table_to_dict(soup_table, row_cl='topic-surround', list_of_columns=['td
             item = target_tree_structure(row, col)
             if item:
                 row_dct[headers[col_num]] = str(item)
-
         if row_dct:
             table_dict[row_num] = row_dct
     return table_dict
@@ -68,5 +64,7 @@ if __name__ == '__main__':
     s = soup_from_url('https://erowid.org/plants/')
     s = s.find('table', 'topic-chart-surround')
     s = soup_table_to_dict(s)
-    dict_to_csv(s)
+    s.popitem()
+    print(s)
+    #dict_to_csv(s)
     #print(s)

@@ -28,7 +28,13 @@ def target_tree_structure(row_soup, tree_path):
     return current_step.getText()
 
 
-def soup_table_to_dict(soup_table, row_cl='topic-surround', list_of_columns=['td;class=topic-name:a', 'td;class=topic-name:a:href', 'td;class=topic-common:i', 'td;class=topic-desc'], headers=['1','2','3','4']):
+def soup_table_to_dict(soup_table, row_cl='topic-surround', 
+                       list_of_columns=[
+                           'td;class=topic-name:a', 
+                           'td;class=topic-name:a:href', 
+                           'td;class=topic-common:i', 
+                           'td;class=topic-desc'], 
+                       headers=['1','2','3','4']):
     assert len(list_of_columns) == len(headers)
     rows = soup_table.find_all('tr', row_cl)
     table_dict = {}

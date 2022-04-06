@@ -14,8 +14,9 @@ def dict_to_csv(dct, filename='data.csv', column_names=[]):
         
 if __name__ == '__main__':
     EROWID_BASE_URL = 'https://www.erowid.org/experiences/'
-    REPORT_QUERY_LIST_URL = EROWID_BASE_URL + 'exp.cgi?S=%d&C=1&Start=0&Max=10' 
+    REPORT_QUERY_LIST_URL = EROWID_BASE_URL + 'exp.cgi?S=%d&C=1&Start=0&Max=1' 
     import requests
     for i in range(1):
         res = requests.get(REPORT_QUERY_LIST_URL%i).content
-        title = str(res)
+        title = str(res).find('title').string
+        print(title)

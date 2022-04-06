@@ -1,0 +1,46 @@
+{
+  "Mushrooms-G_spectabilis": {
+    "name": "Preparation / Recipes",
+    "suburl": "subs/exp_Mushrooms_G_spectabilis_Preparation_I_Recipes.shtml"
+  },
+  "Mushrooms-P_atlantis": {
+    "name": "Mystical Experiences",
+    "suburl": "subs/exp_Mushrooms_P_atlantis_Mystical_Experiences.shtml"
+  },
+  "Mushrooms-P_azurescens": {
+    "name": "What Was in That?",
+    "suburl": "subs/exp_Mushrooms_P_azurescens_What_Was_in_That.shtml"
+  },
+  "Mushrooms-P_cubensis": {
+    "name": "What Was in That?",
+    "suburl": "subs/exp_Mushrooms_P_cubensis_What_Was_in_That.shtml"
+  },
+  "Mushrooms-P_cyanescens": {
+    "name": "Health Benefits",
+    "suburl": "subs/exp_Mushrooms_P_cyanescens_Health_Benefits.shtml"
+  },
+  "Mushrooms-P_mexicana": {
+    "name": "Mystical Experiences",
+    "suburl": "subs/exp_Mushrooms_P_mexicana_Mystical_Experiences.shtml"
+  },
+  "Mushrooms-P_semilanceata": {
+    "name": "Health Benefits",
+    "suburl": "subs/exp_Mushrooms_P_semilanceata_Health_Benefits.shtml"
+  },
+  "Mushrooms-P_subaeruginosa": {
+    "name": "Health Benefits",
+    "suburl": "subs/exp_Mushrooms_P_subaeruginosa_Health_Benefits.shtml"
+  },
+  "Mushrooms-P_tampanensis": {
+    "name": "Health Benefits",
+    "suburl": "subs/exp_Mushrooms_P_tampanensis_Health_Benefits.shtml"
+  },
+  "Mushrooms-P_weilii": {
+    "name": "Glowing Experiences",
+    "suburl": "subs/exp_Mushrooms_P_weilii_Glowing_Experiences.shtml"
+  },
+  "Mushrooms-Panaeoluscyanescens": {
+    "name": "Mystical Experiences",
+    "suburl": "subs/exp_Mushrooms_Panaeolus_cyanescens_Mystical_Experiences.shtml"
+  }
+}

@@ -7,8 +7,14 @@ EROWID_BASE_URL = 'https://www.erowid.org/experiences/'
 EXP_BASE_URL = 'http://www.erowid.org/experiences/exp.php?ID=%s'
 REPORT_QUERY_LIST_URL = EROWID_BASE_URL + 'exp.cgi?S=%d&C=%d&Start=%d&Max=%d' 
 config = {
-        'start_at': 1,
-        'stop_at': 3,
+        # The categories E.g. 'general', 'first times' etc..
+        # are located by id. 
+        'category_start': 1,
+        'category_stop': 3, # 3 is ok, 20+ is thorough, 45+ is endpoint mapping... but fun :))
+        # These start+stop is for the span of ids, which will be scraped
+        # for each id and subcategory.
+        'start_at': 0,
+        'stop_at': 5,
         'use_filter': False, # all stories will be saved if false, because the word list is then ignored.
         'word_filter': set([ # don't use spaces, they have no effect.
             'mushroom', 
@@ -24,11 +30,13 @@ config = {
             'mushies',
             'caps'
             ]),
-        # as of now the ids will only scrape the 'general' exp tab.
-        'ids': [66],
+        # This takes ids of erowid drugs and scrapes categories,
+        # and stories based on above settings.
+        'ids': [118, 856, 844, 66, 67, 193, 90, 123, 133, 127, 185],
         # Urls placed here are scraped with no reguard for start and stop limits,
         # they should be set in the url query.
         'urls': [
+                 # these are now examples of how to use url input.
                  #'https://www.erowid.org/experiences/exp.cgi?S1=193&Max=100',
                  #'https://www.erowid.org/experiences/exp.cgi?S1=90&Max=100'
                  ]
@@ -67,7 +75,7 @@ def scrape_exp_table(table_url:str):
     print('Found ids:', len(eid_list))
 
     if len(eid_list) == 0:
-        return 'none'
+        return 'none', False
 
     story_list = []
     for expid in eid_list:
@@ -129,7 +137,7 @@ if __name__ == '__main__':
             return
         files += 1
         exps += len(data)
-        title = title.replace(' ', '_').replace('.', '').split(':')[0]+str(files)
+        title = title.split(':')[0].replace(' ', '_').replace('.', '').replace('/', '')+str(files)
         save_csv(filename%title, data)
         print('table saved to', filename%title)
 
@@ -137,8 +145,9 @@ if __name__ == '__main__':
         scrapensave(table_urltag)
 
     for table_id in config['ids']:
-        for i in range(7,9):
+        for i in range(config['category_start'], config['category_stop']+1): 
             _input = REPORT_QUERY_LIST_URL % (table_id, i, config['start_at'], config['stop_at'])
+            print('_input:', _input)
             scrapensave(_input)
             
-    print('Finished stats:\nfiles:', files, '\nexps:', exps)    
+    print('\nFinished stats:\nfiles:', files, '\nexps:', exps)    

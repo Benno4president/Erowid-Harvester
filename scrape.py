@@ -32,13 +32,17 @@ config = {
             ]),
         # This takes ids of erowid drugs and scrapes categories,
         # and stories based on above settings.
-        'ids': [118, 856, 844, 66, 67, 193, 90, 123, 133, 127, 185],
+        'ids': [], #[118, 856, 844, 66, 67, 193, 90, 123, 133, 127, 185],
         # Urls placed here are scraped with no reguard for start and stop limits,
         # they should be set in the url query.
         'urls': [
                  # these are now examples of how to use url input.
                  #'https://www.erowid.org/experiences/exp.cgi?S1=193&Max=100',
                  #'https://www.erowid.org/experiences/exp.cgi?S1=90&Max=100'
+                 
+                 # Below is the 'all results' from mushrooms and lsd.
+                 'https://www.erowid.org/experiences/exp.cgi?S1=39&Max=2',
+                 'https://www.erowid.org/experiences/exp.cgi?S1=26&Max=2'
                  ]
     }
 
@@ -101,23 +105,28 @@ def scrape_exp_table(table_url:str):
         title = page.split('class="title">')[1].split('</div>')[0].replace('\n', '')
         substance = page.split('class="substance">')[1].split('</div>')[0].replace('\n', '')
         author = page.split('class="author">')[1].split('</a>')[0].split('>')[1].replace('\n', '')
+        published = page.split('<td>Published: ')[1].split('</td>')[0].replace('\n', '')
         
         print('Title: %s'%title)
         print('Substance: %s'%substance)
         print('Author: %s'%author)
+        print('Published: %s'%published)
 
         # get main text and remove common unicode characters
         body = page.split('Start Body -->')[1].split('<!-- End Body')[0]
-        body = body.replace('\r','')
-        body = body.replace('\n','')
-        body = body.replace('\x92',"'")
-        body = body.replace('\x93','"')
-        body = body.replace('\x94','"')
-        body = body.replace('\x97',' -- ')
+        body = body.replace('\\r',' ')
+        body = body.replace('\\n',' ')
+        body = body.replace('\\x92',"")
+        body = body.replace('\\x93','')
+        body = body.replace('\\x94','')
+        body = body.replace('\\x96','')
+        body = body.replace('\\x97',' ')
+        body = body.replace('\\xe9','')
+        body = body.replace('\\xe0','')
         body = removeHTML(body)
         body = body.strip()
 
-        story_list.append({'id':expid, 'title':title, 'author':author, 'substance':substance, 'story': body})
+        story_list.append({'id':expid, 'title':title, 'author':author, 'published':published, 'substance':substance, 'story': body})
     return head_title, story_list
 
 # a main function which creates a folder,

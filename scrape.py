@@ -1,4 +1,4 @@
-import json, re, time, csv, os
+import json, re, time, csv, os, traceback
 import requests
 from bs4 import BeautifulSoup
 
@@ -131,15 +131,19 @@ if __name__ == '__main__':
         print('created dir ./table_csvs')
     
     def scrapensave(url):
-        global files, exps
-        title, data = scrape_exp_table(url)
-        if title == 'none':
-            return
-        files += 1
-        exps += len(data)
-        title = title.split(':')[0].replace(' ', '_').replace('.', '').replace('/', '')+str(files)
-        save_csv(filename%title, data)
-        print('table saved to', filename%title)
+        try:
+            global files, exps
+            title, data = scrape_exp_table(url)
+            if title == 'none':
+                return
+            files += 1
+            exps += len(data)
+            title = title.split(':')[0].replace(' ', '_').replace('.', '').replace('/', '')+str(files)
+            save_csv(filename%title, data)
+            print('table saved to', filename%title)
+        except Exception as e:
+            print('\n############################\n', 'Error:', e, '\n', traceback.print_exc()
+            )
 
     for table_urltag in config['urls']:
         scrapensave(table_urltag)

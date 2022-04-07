@@ -8,7 +8,7 @@ EXP_BASE_URL = 'http://www.erowid.org/experiences/exp.php?ID=%s'
 REPORT_QUERY_LIST_URL = EROWID_BASE_URL + 'exp.cgi?S=%d&C=%d&Start=%d&Max=%d' 
 config = {
         'start_at': 1,
-        'stop_at': 300,
+        'stop_at': 3,
         'use_filter': False, # all stories will be saved if false, because the word list is then ignored.
         'word_filter': set([ # don't use spaces, they have no effect.
             'mushroom', 
@@ -25,11 +25,12 @@ config = {
             'caps'
             ]),
         # as of now the ids will only scrape the 'general' exp tab.
-        'ids': [],
+        'ids': [66],
         # Urls placed here are scraped with no reguard for start and stop limits,
         # they should be set in the url query.
-        'urls': ['https://www.erowid.org/experiences/exp.cgi?S1=193&Max=100',
-                 'https://www.erowid.org/experiences/exp.cgi?S1=90&Max=100'
+        'urls': [
+                 #'https://www.erowid.org/experiences/exp.cgi?S1=193&Max=100',
+                 #'https://www.erowid.org/experiences/exp.cgi?S1=90&Max=100'
                  ]
     }
 
@@ -54,13 +55,8 @@ def save_csv(fp, data_ldict):
 
 # a messy erowid html table scraper, which enters the experiences
 # and collects the data. Returns a list of jsonlines.
-def scrape_exp_table(input_key=66):
-    if type(input_key) == str:
-        exp_table_soup = input_key
-    else:
-        exp_table_soup = REPORT_QUERY_LIST_URL % (input_key, 1, config['start_at'], config['stop_at'])
-    
-    exp_table_soup = get_soup(exp_table_soup)
+def scrape_exp_table(table_url:str):
+    exp_table_soup = get_soup(table_url)
     head_title = exp_table_soup.find('title').string
     entries = exp_table_soup.find_all('a', href=True)
     eid_list = []
@@ -69,6 +65,9 @@ def scrape_exp_table(input_key=66):
         if len(eid) > 1:
             eid_list.append(eid[1])
     print('Found ids:', len(eid_list))
+
+    if len(eid_list) == 0:
+        return 'none'
 
     story_list = []
     for expid in eid_list:
@@ -117,13 +116,29 @@ def scrape_exp_table(input_key=66):
 # loops through ids and urls set the the config,
 # and generates a .csv file for each, name based on title.
 if __name__ == '__main__':
+    files, exps = 0, 0
     filename = './table_csvs/%s.csv'
     if not os.path.exists('./table_csvs/'):
         os.mkdir('./table_csvs/')
         print('created dir ./table_csvs')
-    for num, table_urltag in enumerate(config['ids'] + config['urls']):
-        title, data = scrape_exp_table(table_urltag)
-        title = title.replace(' ', '_').replace('.', '').split(':')[0]+str(num)
+    
+    def scrapensave(url):
+        global files, exps
+        title, data = scrape_exp_table(url)
+        if title == 'none':
+            return
+        files += 1
+        exps += len(data)
+        title = title.replace(' ', '_').replace('.', '').split(':')[0]+str(files)
         save_csv(filename%title, data)
         print('table saved to', filename%title)
-    
+
+    for table_urltag in config['urls']:
+        scrapensave(table_urltag)
+
+    for table_id in config['ids']:
+        for i in range(7,9):
+            _input = REPORT_QUERY_LIST_URL % (table_id, i, config['start_at'], config['stop_at'])
+            scrapensave(_input)
+            
+    print('Finished stats:\nfiles:', files, '\nexps:', exps)    

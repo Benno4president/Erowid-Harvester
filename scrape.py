@@ -3,9 +3,6 @@ import requests
 from bs4 import BeautifulSoup
 
 
-EROWID_BASE_URL = 'https://www.erowid.org/experiences/'
-EXP_BASE_URL = 'http://www.erowid.org/experiences/exp.php?ID=%s'
-REPORT_QUERY_LIST_URL = EROWID_BASE_URL + 'exp.cgi?S=%d&C=%d&Start=%d&Max=%d' 
 config = {
         # The categories E.g. 'general', 'first times' etc..
         # are located by id. 
@@ -41,10 +38,15 @@ config = {
                  #'https://www.erowid.org/experiences/exp.cgi?S1=90&Max=100'
                  
                  # Below is the 'all results' from mushrooms and lsd.
-                 'https://www.erowid.org/experiences/exp.cgi?S1=39&Max=2',
-                 'https://www.erowid.org/experiences/exp.cgi?S1=26&Max=2'
+                 'https://www.erowid.org/experiences/exp.cgi?S1=39&Max=500',
+                 'https://www.erowid.org/experiences/exp.cgi?S1=26&Max=500'
                  ]
     }
+
+# global declarations and setup.
+EROWID_BASE_URL = 'https://www.erowid.org/experiences/'
+EXP_BASE_URL = 'http://www.erowid.org/experiences/exp.php?ID=%s'
+REPORT_QUERY_LIST_URL = EROWID_BASE_URL + 'exp.cgi?S=%d&C=%d&Start=%d&Max=%d' 
 
 # Helper functions 
 def get_soup(url):
@@ -83,7 +85,7 @@ def scrape_exp_table(table_url:str):
 
     story_list = []
     for expid in eid_list:
-        print('Fetching id: %s' % expid)
+        print('Fetching id: %s' % expid, end=', ')
         page = str(requests.get(EXP_BASE_URL % expid).content)
 
         # sleeping to not get ip banned for spam
@@ -101,28 +103,28 @@ def scrape_exp_table(table_url:str):
         else:
             print('Matched on:', intrsec) 
 
+        try:
+            title = page.split('class="title">')[1].split('</div>')[0].replace('\n', '')
+            substance = page.split('class="substance">')[1].split('</div>')[0].replace('\n', '')
+            author = page.split('class="author">')[1].split('</a>')[0].split('>')[1].replace('\n', '')
+            published = page.split('<td>Published: ')[1].split('</td>')[0].replace('\n', '')
+        except:
+            print('\n'+'#'*20, '\nFailed on:', EXP_BASE_URL % expid,'\n'+'#'*20)
+            continue
         
-        title = page.split('class="title">')[1].split('</div>')[0].replace('\n', '')
-        substance = page.split('class="substance">')[1].split('</div>')[0].replace('\n', '')
-        author = page.split('class="author">')[1].split('</a>')[0].split('>')[1].replace('\n', '')
-        published = page.split('<td>Published: ')[1].split('</td>')[0].replace('\n', '')
+        print('Title: %s, Substance: %s'%(title,substance))
         
-        print('Title: %s'%title)
-        print('Substance: %s'%substance)
-        print('Author: %s'%author)
-        print('Published: %s'%published)
-
         # get main text and remove common unicode characters
         body = page.split('Start Body -->')[1].split('<!-- End Body')[0]
         body = body.replace('\\r',' ')
         body = body.replace('\\n',' ')
-        body = body.replace('\\x92',"")
+        body = body.replace('\\x92','')
         body = body.replace('\\x93','')
         body = body.replace('\\x94','')
-        body = body.replace('\\x96','')
+        body = body.replace('\\x96',' ')
         body = body.replace('\\x97',' ')
-        body = body.replace('\\xe9','')
-        body = body.replace('\\xe0','')
+        body = body.replace('\\xe9',' ')
+        body = body.replace('\\xe0',' ')
         body = removeHTML(body)
         body = body.strip()
 
@@ -140,19 +142,16 @@ if __name__ == '__main__':
         print('created dir ./table_csvs')
     
     def scrapensave(url):
-        try:
-            global files, exps
-            title, data = scrape_exp_table(url)
-            if title == 'none':
-                return
-            files += 1
-            exps += len(data)
-            title = title.split(':')[0].replace(' ', '_').replace('.', '').replace('/', '')+str(files)
-            save_csv(filename%title, data)
-            print('table saved to', filename%title)
-        except Exception as e:
-            print('\n############################\n', 'Error:', e, '\n', traceback.print_exc()
-            )
+        global files, exps
+        title, data = scrape_exp_table(url)
+        if title == 'none':
+            return
+        files += 1
+        exps += len(data)
+        title = title.split(':')[0].replace(' ', '_').replace('.', '').replace('/', '')+str(files)
+        save_csv(filename%title, data)
+        print('table saved to', filename%title)
+
 
     for table_urltag in config['urls']:
         scrapensave(table_urltag)
@@ -163,4 +162,4 @@ if __name__ == '__main__':
             print('_input:', _input)
             scrapensave(_input)
             
-    print('\nFinished stats:\nfiles:', files, '\nexps:', exps)    
+    print('\nFinished scraping:\nexperience tables:', files, '\ntotal experiences:', exps)    

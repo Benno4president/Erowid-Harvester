@@ -39,9 +39,9 @@ config = {
                  #'https://www.erowid.org/experiences/exp.cgi?S1=90&Max=100'
                  
                  # Below is the 'all results' from mushrooms and lsd.
-                 #'https://www.erowid.org/experiences/exp.cgi?S1=39&Max=2400', # Mushrooms
+                 'https://www.erowid.org/experiences/exp.cgi?S1=39&Max=2400', # Mushrooms
                   #'https://www.erowid.org/experiences/exp.cgi?S1=26&Max=500', # HB woodrose
-                 'https://erowid.org/experiences/exp.cgi?S1=2&Max=2'          # LSD
+                 'https://erowid.org/experiences/exp.cgi?S1=2&Max=2400'          # LSD
                  ]
     }
 

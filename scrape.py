@@ -1,4 +1,5 @@
-import json, re, time, csv, os, traceback
+import json, re, time, csv, os, traceback, random
+from datetime import datetime
 import requests
 from bs4 import BeautifulSoup
 
@@ -38,9 +39,9 @@ config = {
                  #'https://www.erowid.org/experiences/exp.cgi?S1=90&Max=100'
                  
                  # Below is the 'all results' from mushrooms and lsd.
-                 'https://www.erowid.org/experiences/exp.cgi?S1=39&Max=2400', # Mushrooms
+                 #'https://www.erowid.org/experiences/exp.cgi?S1=39&Max=2400', # Mushrooms
                   #'https://www.erowid.org/experiences/exp.cgi?S1=26&Max=500', # HB woodrose
-                 'https://erowid.org/experiences/exp.cgi?S1=2&Max=2400' # LSD
+                 'https://erowid.org/experiences/exp.cgi?S1=2&Max=2'          # LSD
                  ]
     }
 
@@ -59,6 +60,9 @@ def removeHTML(s):
     for htmlRegex in htmlRegexes:
         s = re.sub(htmlRegex, '', s)
     return s
+
+def mdy_to_ymd(stringdate):
+    return datetime.strptime(stringdate, '%b %d, %Y').strftime('%Y-%m-%d')
 
 def save_csv(fp, data_ldict):
     csv_columns = data_ldict[0].keys()
@@ -90,7 +94,7 @@ def scrape_exp_table(table_url:str):
         page = str(requests.get(EXP_BASE_URL % expid).content)
 
         # sleeping to not get ip banned for spam
-        time.sleep(0.5)
+        time.sleep(random.randint(1,2)-0.5) # 0.5
         if 'Unable to view experience' in page:
             print('No report at that ID number.')
             continue
@@ -109,6 +113,7 @@ def scrape_exp_table(table_url:str):
             substance = page.split('class="substance">')[1].split('</div>')[0].replace('\n', '')
             author = page.split('class="author">')[1].split('</a>')[0].split('>')[1].replace('\n', '')
             published = page.split('<td>Published: ')[1].split('</td>')[0].replace('\n', '')
+            published = mdy_to_ymd(published)
         except:
             print('\n'+'#'*20, '\nFailed on:', EXP_BASE_URL % expid,'\n'+'#'*20)
             continue
